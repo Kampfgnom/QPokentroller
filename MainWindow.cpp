@@ -12,6 +12,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
     ui->setupUi(this);
     startTimer(m_updateInterval);
+    m_locationSource = QGeoPositionInfoSource::createDefaultSource(this);
+    connect(m_locationSource, &QGeoPositionInfoSource::positionUpdated, [this] (const QGeoPositionInfo &update) {
+        m_locationSource->stopUpdates();
+        setCurrentCoordinate(update.coordinate());
+    });
 }
 
 MainWindow::~MainWindow()
@@ -32,6 +37,9 @@ void MainWindow::setCurrentCoordinate(const QGeoCoordinate &currentCoordinate)
 
     qDebug(mainWindow) << Q_FUNC_INFO << currentCoordinate;
     m_currentCoordinate = currentCoordinate;
+    ui->doubleSpinBoxLatitude->setValue(m_currentCoordinate.latitude());
+    ui->doubleSpinBoxLongitude->setValue(m_currentCoordinate.longitude());
+
     writeGpxFile();
     tellXcodeToChangeLocation();
 }
@@ -143,4 +151,11 @@ void MainWindow::tellXcodeToChangeLocation()
     qDebug(mainWindow) << "script" << script;
 
     QProcess::execute(script);
+}
+
+void MainWindow::on_pushButtonGetCurrentLocation_clicked()
+{
+    qDebug(mainWindow) << Q_FUNC_INFO;
+
+    m_locationSource->startUpdates();
 }

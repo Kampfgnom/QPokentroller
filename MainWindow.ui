@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>469</width>
+    <height>294</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -16,13 +16,82 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QDoubleSpinBox" name="doubleSpinBoxLatitude">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>8</number>
+      </property>
+      <property name="maximum">
+       <double>180.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.000100000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QDoubleSpinBox" name="doubleSpinBoxLongitude">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="decimals">
+       <number>8</number>
+      </property>
+      <property name="maximum">
+       <double>180.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.000100000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Long.</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Lat.</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QPushButton" name="pushButtonGetCurrentLocation">
+      <property name="text">
+       <string>Get current</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>469</width>
      <height>22</height>
     </rect>
    </property>

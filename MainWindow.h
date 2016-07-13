@@ -23,6 +23,9 @@ public:
     void runAppleScript(const QString &appleScript);
     void tellXcodeToChangeLocation();
 
+private slots:
+    void on_pushButtonGetCurrentLocation_clicked();
+
 private:
     Ui::MainWindow *ui;
     QGeoCoordinate m_currentCoordinate{51.5040137074481, 7.47502049276901};
@@ -32,6 +35,7 @@ private:
     QElapsedTimer m_elapsedTimer;
     qint64 m_updateInterval{100}; // ms
     QSet<int> m_keysDown;
+    QGeoPositionInfoSource *m_locationSource{nullptr};
 
     void keyReleaseEvent(QKeyEvent *keyEvent) override;
     void keyPressEvent(QKeyEvent *keyEvent) override;
