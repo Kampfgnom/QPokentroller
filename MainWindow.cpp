@@ -1,7 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-Q_LOGGING_CATEGORY(mainWindow, "MainWindow", QtDebugMsg)
+Q_LOGGING_CATEGORY(mainWindow, "MainWindow", QtWarningMsg)
 
 namespace
 {
@@ -13,10 +13,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->setupUi(this);
     startTimer(m_updateInterval);
     m_locationSource = QGeoPositionInfoSource::createDefaultSource(this);
-    connect(m_locationSource, &QGeoPositionInfoSource::positionUpdated, [this] (const QGeoPositionInfo &update) {
+    connect(m_locationSource, &QGeoPositionInfoSource::positionUpdated, [this](const QGeoPositionInfo &update) {
         m_locationSource->stopUpdates();
         setCurrentCoordinate(update.coordinate());
     });
+
+    bool ok = false;
+    qreal latitude = m_settings.value("lastKnownLocation/latitude", 0.0).toDouble(&ok);
+    Q_ASSERT(ok);
+    qreal longitude = m_settings.value("lastKnownLocation/longitude", 0.0).toDouble(&ok);
+    Q_ASSERT(ok);
+    setCurrentCoordinate(QGeoCoordinate(latitude, longitude));
 }
 
 MainWindow::~MainWindow()
@@ -39,6 +46,8 @@ void MainWindow::setCurrentCoordinate(const QGeoCoordinate &currentCoordinate)
     m_currentCoordinate = currentCoordinate;
     ui->doubleSpinBoxLatitude->setValue(m_currentCoordinate.latitude());
     ui->doubleSpinBoxLongitude->setValue(m_currentCoordinate.longitude());
+    m_settings.setValue("lastKnownLocation/latitude", m_currentCoordinate.latitude());
+    m_settings.setValue("lastKnownLocation/longitude", m_currentCoordinate.longitude());
 
     writeGpxFile();
     tellXcodeToChangeLocation();
@@ -69,15 +78,22 @@ void MainWindow::timerEvent(QTimerEvent *timerEvent)
         }
     }
 
+    bool moved = false;
     for (int key : m_keysDown) {
         switch (key) {
         case Qt::Key_Up:
+            moved = true;
             move(MoveForward);
             break;
         case Qt::Key_Down:
+            moved = true;
             move(MoveBackward);
             break;
         }
+    }
+
+    if (!moved && ui->checkBoxKeepGoing->isChecked()) {
+        move(MoveForward);
     }
 
     QMainWindow::timerEvent(timerEvent);
@@ -117,6 +133,12 @@ void MainWindow::turn(TurningDirection direction)
     }
     qDebug(mainWindow) << "deltaAzimuth" << deltaAzimuth;
     m_azimuth += deltaAzimuth;
+
+    // walk a tiny distance, to visualize the movement
+    QGeoCoordinate newCoordinate = m_currentCoordinate.atDistanceAndAzimuth(1.0, m_azimuth);
+    qDebug(mainWindow) << "newCoordinate" << newCoordinate;
+
+    setCurrentCoordinate(newCoordinate);
 }
 
 void MainWindow::writeGpxFile()
@@ -158,4 +180,10 @@ void MainWindow::on_pushButtonGetCurrentLocation_clicked()
     qDebug(mainWindow) << Q_FUNC_INFO;
 
     m_locationSource->startUpdates();
+}
+
+void MainWindow::on_horizontalSliderSpeed_sliderMoved(int position)
+{
+    m_speed = static_cast<double>(position) / 10.0;
+    ui->labelSpeed->setText(tr("%1 m/s").arg(m_speed));
 }
