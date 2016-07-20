@@ -1,7 +1,9 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-Q_LOGGING_CATEGORY(mainWindow, "MainWindow", QtWarningMsg)
+#include <QFileDialog>
+
+Q_LOGGING_CATEGORY(mainWindow, "MainWindow", QtDebugMsg)
 
 namespace
 {
@@ -17,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         m_locationSource->stopUpdates();
         setCurrentCoordinate(update.coordinate());
     });
+
+    ui->quickWidgetMap->rootContext()->setContextProperty("controller", this);
+    ui->quickWidgetMap->setSource(QUrl("qrc:quickwidgets/Map.qml"));
 
     bool ok = false;
     qreal latitude = m_settings.value("lastKnownLocation/latitude", 0.0).toDouble(&ok);
@@ -49,8 +54,12 @@ void MainWindow::setCurrentCoordinate(const QGeoCoordinate &currentCoordinate)
     m_settings.setValue("lastKnownLocation/latitude", m_currentCoordinate.latitude());
     m_settings.setValue("lastKnownLocation/longitude", m_currentCoordinate.longitude());
 
-    writeGpxFile();
-    tellXcodeToChangeLocation();
+    if (ui->checkBoxActive->isChecked()) {
+        writeGpxFile();
+        tellXcodeToChangeLocation();
+    }
+
+    emit currentCoordinateChanged(m_currentCoordinate);
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *keyEvent)
@@ -93,7 +102,11 @@ void MainWindow::timerEvent(QTimerEvent *timerEvent)
     }
 
     if (!moved && ui->checkBoxKeepGoing->isChecked()) {
-        move(MoveForward);
+        if (ui->checkBoxBackwards->isChecked()) {
+            move(MoveBackward);
+        } else {
+            move(MoveForward);
+        }
     }
 
     QMainWindow::timerEvent(timerEvent);
@@ -175,6 +188,22 @@ void MainWindow::tellXcodeToChangeLocation()
     QProcess::execute(script);
 }
 
+QGeoCoordinate MainWindow::destinationCoorinate() const
+{
+    return m_destinationCoorinate;
+}
+
+void MainWindow::setDestinationCoorinate(QGeoCoordinate destinationCoorinate)
+{
+    if (m_destinationCoorinate == destinationCoorinate)
+        return;
+
+    qDebug(mainWindow) << Q_FUNC_INFO << destinationCoorinate;
+    m_destinationCoorinate = destinationCoorinate;
+    m_azimuth = m_currentCoordinate.azimuthTo(m_destinationCoorinate);
+    emit destinationCoorinateChanged(destinationCoorinate);
+}
+
 void MainWindow::on_pushButtonGetCurrentLocation_clicked()
 {
     qDebug(mainWindow) << Q_FUNC_INFO;
@@ -186,4 +215,49 @@ void MainWindow::on_horizontalSliderSpeed_sliderMoved(int position)
 {
     m_speed = static_cast<double>(position) / 10.0;
     ui->labelSpeed->setText(tr("%1 m/s").arg(m_speed));
+}
+
+void MainWindow::on_pushButtonOpenGpx_clicked()
+{
+    qDebug(mainWindow) << Q_FUNC_INFO;
+    QString fileName = QFileDialog::getOpenFileName(this);
+    qDebug(mainWindow) << "fileName" << fileName;
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly)) {
+        qCWarning(mainWindow) << "file.errorString()" << file.errorString();
+        return;
+    }
+
+    QString contents = QString::fromUtf8(file.readAll());
+    qDebug(mainWindow) << "contents" << contents;
+    QRegularExpression regexpLat("lat=\"(\\d+\\.\\d+)\"");
+    QRegularExpressionMatch matchLat = regexpLat.match(contents);
+    qDebug(mainWindow) << "matchLat" << matchLat;
+    if (!matchLat.isValid())
+        return;
+
+    bool ok = false;
+    qreal lat = matchLat.captured(1).toDouble(&ok);
+    qDebug(mainWindow) << "lat" << lat;
+    if (!ok) {
+        return;
+    }
+
+    QRegularExpression regexpLon("lon=\"(\\d+\\.\\d+)\"");
+    QRegularExpressionMatch matchLon = regexpLon.match(contents);
+    if (!matchLon.isValid())
+        return;
+
+    ok = false;
+    qreal lon = matchLon.captured(1).toDouble(&ok);
+    qDebug(mainWindow) << "lon" << lon;
+    if (!ok) {
+        return;
+    }
+
+    setCurrentCoordinate({lat, lon});
 }

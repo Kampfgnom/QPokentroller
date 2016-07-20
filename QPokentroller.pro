@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui location
+QT       += core gui location xml quickwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,15 +13,21 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        MainWindow.cpp
+        MainWindow.cpp \
+    GpxReader.cpp
 
-HEADERS  += MainWindow.h
+HEADERS  += MainWindow.h \
+    GpxReader.h
 
 FORMS    += MainWindow.ui
 
 DISTFILES += \
-    change-xcode-location.applescript
+    change-xcode-location.applescript \
+    Map.qml
 
 applescript.files = $$DISTFILES
 applescript.path = Contents/Resources
 QMAKE_BUNDLE_DATA += applescript
+
+RESOURCES += \
+    qmlSources.qrc

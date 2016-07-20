@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>469</width>
-    <height>294</height>
+    <width>724</width>
+    <height>431</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -18,10 +18,10 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QLabel" name="label_3">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
       <property name="text">
-       <string>Speed:</string>
+       <string>Lat.</string>
       </property>
      </widget>
     </item>
@@ -71,33 +71,6 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="4">
-     <widget class="QPushButton" name="pushButtonGetCurrentLocation">
-      <property name="text">
-       <string>Get current</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="2">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Lat.</string>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="1" colspan="2">
      <widget class="QSlider" name="horizontalSliderSpeed">
       <property name="maximum">
@@ -111,10 +84,52 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0" colspan="2">
+    <item row="0" column="4">
+     <widget class="QPushButton" name="pushButtonGetCurrentLocation">
+      <property name="text">
+       <string>Get current</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Speed:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="5">
+     <widget class="QPushButton" name="pushButtonOpenGpx">
+      <property name="text">
+       <string>Open GPX</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="2">
+     <widget class="QCheckBox" name="checkBoxActive">
+      <property name="text">
+       <string>Active</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="6">
+     <widget class="QQuickWidget" name="quickWidgetMap">
+      <property name="resizeMode">
+       <enum>QQuickWidget::SizeRootObjectToView</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="4">
      <widget class="QCheckBox" name="checkBoxKeepGoing">
       <property name="text">
        <string>Keep going</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="5">
+     <widget class="QCheckBox" name="checkBoxBackwards">
+      <property name="text">
+       <string>Backwards</string>
       </property>
      </widget>
     </item>
@@ -125,7 +140,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>469</width>
+     <width>724</width>
      <height>22</height>
     </rect>
    </property>
@@ -141,6 +156,13 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QQuickWidget</class>
+   <extends>QWidget</extends>
+   <header>QtQuickWidgets/QQuickWidget</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

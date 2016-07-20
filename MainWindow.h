@@ -12,6 +12,8 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    Q_PROPERTY(QGeoCoordinate currentCoordinate READ currentCoordinate WRITE setCurrentCoordinate NOTIFY currentCoordinateChanged)
+    Q_PROPERTY(QGeoCoordinate destinationCoorinate READ destinationCoorinate WRITE setDestinationCoorinate NOTIFY destinationCoorinateChanged)
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -23,10 +25,22 @@ public:
     void runAppleScript(const QString &appleScript);
     void tellXcodeToChangeLocation();
 
+    QGeoCoordinate destinationCoorinate() const;
+
+public slots:
+    void setDestinationCoorinate(QGeoCoordinate destinationCoorinate);
+
+signals:
+    void currentCoordinateChanged(QGeoCoordinate currentCoordinate);
+
+    void destinationCoorinateChanged(QGeoCoordinate destinationCoorinate);
+
 private slots:
     void on_pushButtonGetCurrentLocation_clicked();
 
     void on_horizontalSliderSpeed_sliderMoved(int position);
+
+    void on_pushButtonOpenGpx_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -39,6 +53,7 @@ private:
     QSet<int> m_keysDown;
     QGeoPositionInfoSource *m_locationSource{nullptr};
     QSettings m_settings;
+    QGeoCoordinate m_destinationCoorinate;
 
     void keyReleaseEvent(QKeyEvent *keyEvent) override;
     void keyPressEvent(QKeyEvent *keyEvent) override;
