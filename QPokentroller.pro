@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         MainWindow.cpp \
-    GpxReader.cpp
+    MapController.cpp \
+    XcodeController.cpp
 
 HEADERS  += MainWindow.h \
-    GpxReader.h
+    MapController.h \
+    XcodeController.h
 
 FORMS    += MainWindow.ui
 
