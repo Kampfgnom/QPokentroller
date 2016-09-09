@@ -10,7 +10,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QPokentroller
 TEMPLATE = app
-
+DEFINES += GOOGLE_MAPS_APIKEY=\\\"<YOUR KEY HERE>\\\"
+DEFINES += GOOGLE_DIRECTIONS_APIKEY=\\\"<YOUR KEY HERE>\\\"
 
 SOURCES += main.cpp\
         MainWindow.cpp \

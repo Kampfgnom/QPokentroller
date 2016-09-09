@@ -5,8 +5,8 @@ import QtPositioning 5.7
 Item {
     Plugin {
         id: myPlugin
-        name: "osm"
-        PluginParameter { name: "osm.mapping.host"; value: "https://maps.wikimedia.org/osm-intl/" }
+        name: "googlemaps"
+        PluginParameter { name: "googlemaps.maps.apikey"; value: <YOU KEY HERE> }
     }
 
     Map {
@@ -14,22 +14,21 @@ Item {
         anchors.fill: parent
         plugin: myPlugin
         zoomLevel: 13
-        activeMapType: supportedMapTypes[7]
 
         Connections {
-            target: controller
+            target: movementController
             onCurrentCoordinateChanged: {
-                marker.center = controller.currentCoordinate
+                marker.center = movementController.currentCoordinate
             }
 
             onCenterMapOnCurrentCoordinate: {
-                map.center = controller.currentCoordinate
+                map.center = movementController.currentCoordinate
             }
         }
 
         MapCircle {
             id: marker
-            center: controller.currentCoordinate
+            center: movementController.currentCoordinate
             radius: 20.0
             color: 'green'
             border.width: 3
@@ -42,10 +41,10 @@ Item {
             line.width: 3
             line.color: 'blue'
             Connections {
-                target: controller
+                target: movementController
 
                 onPathChanged: {
-                    pathLine.path = controller.path
+                    pathLine.path = movementController.path
                 }
             }
 
@@ -56,9 +55,9 @@ Item {
             acceptedButtons: Qt.RightButton
             onClicked: {
                 if (mouse.modifiers & Qt.ShiftModifier) {
-                    controller.appendCalculatedRouteToPoint(map.toCoordinate(Qt.point(mouse.x, mouse.y)))
+                    movementController.appendCalculatedRouteToPoint(map.toCoordinate(Qt.point(mouse.x, mouse.y)))
                 } else {
-                    controller.calculateRouteToPoint(map.toCoordinate(Qt.point(mouse.x, mouse.y)))
+                    movementController.calculateRouteToPoint(map.toCoordinate(Qt.point(mouse.x, mouse.y)))
                 }
             }
         }

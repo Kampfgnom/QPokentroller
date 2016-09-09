@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_xcodeController = new XcodeController(this);
     m_xcodeController->setMapController(m_mapController);
 
-    ui->quickWidgetMap->rootContext()->setContextProperty("controller", m_mapController);
+    ui->quickWidgetMap->rootContext()->setContextProperty("movementController", m_mapController);
     ui->quickWidgetMap->setSource(QUrl("qrc:quickwidgets/Map.qml"));
 
     qreal latitude = m_settings.value("lastKnownLocation/latitude", 0.0).toDouble();

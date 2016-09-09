@@ -1,17 +1,20 @@
 #include "MapController.h"
 
+#include <QDebug>
 #include <QElapsedTimer>
 #include <QGeoPositionInfo>
 #include <QGeoPositionInfoSource>
 #include <QGeoRouteSegment>
 #include <QGeoRoutingManager>
 #include <QGeoServiceProvider>
-#include <QDebug>
 
 MapController::MapController(QObject *parent) : QObject(parent)
 {
+    qDebug() << QGeoServiceProvider::availableServiceProviders();
     m_locationSource = QGeoPositionInfoSource::createDefaultSource(this);
-    QGeoServiceProvider *provider = new QGeoServiceProvider("osm");
+    QGeoServiceProvider *provider = new QGeoServiceProvider("googlemaps");
+    provider->setParameters({{"googlemaps.maps.apikey", GOOGLE_MAPS_APIKEY}, {"googlemaps.route.apikey", GOOGLE_DIRECTIONS_APIKEY}});
+
     m_routeManager = provider->routingManager();
 
     connect(m_routeManager, &QGeoRoutingManager::finished, [this](QGeoRouteReply *reply) {
@@ -26,8 +29,10 @@ MapController::MapController(QObject *parent) : QObject(parent)
 
         auto path = reply->routes().first().path();
         qreal endDistance = reply->request().waypoints().last().distanceTo(path.last());
-        if(endDistance > 5.0)
+        if (endDistance > 5.0) {
             path.append(reply->request().waypoints().last());
+            path.append(reply->request().waypoints().last());
+        }
 
         m_restPath.append(path);
         emit pathChanged();
